@@ -8,6 +8,8 @@ Adresse eingeben und die Umgebung als kleine **isometrische Comic-Insel** sehen:
 
 Die Wetterinsel läuft als selbst gehostete **Docker**-App oder als **einzelne HTML-Datei**, die du auf jeden Webserver legst – und sie hat einen minimalen **Kiosk-Modus**, um sie als iFrame in Dashboards (z. B. Home Assistant) einzubetten.
 
+**Live-Demo:** https://haydecker.github.io/wetterinsel/ (Einzeldatei-Version; nutzt direkt die öffentlichen Kartenserver, das erste Laden eines Ortes kann dauern)
+
 > Stand: Hobbyprojekt, Version 1.1. Öffentliche Karten- und Wetterdienste sind Gemeinschaftsressourcen – bitte vor dem Betrieb einer öffentlichen Instanz [RECHTLICHES.md](docs/RECHTLICHES.md) lesen.
 
 ## Highlights

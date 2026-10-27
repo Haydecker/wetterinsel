@@ -8,6 +8,8 @@ Type in an address and get your surroundings as a small **comic-style isometric 
 
 It runs as a self-hosted **Docker** app or as a **single HTML file** you can drop on any web server – and it has a minimal **kiosk mode** to embed it as an iFrame in dashboards (e.g. Home Assistant).
 
+**Live demo:** https://haydecker.github.io/wetterinsel/ (single-file version; uses the public map servers directly, so the first load of a place can take a while)
+
 > Status: hobby project, version 1.1. Public map and weather services are shared resources – please read [LEGAL.md](docs/LEGAL.md) before running a public instance.
 
 ## Highlights

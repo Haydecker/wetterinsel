@@ -1,0 +1,14 @@
+services:
+  wetterinsel:
+    build: .
+    container_name: wetterinsel
+    ports:
+      - "8088:80"
+    environment:
+      # Kontakt für Nominatim/Overpass (User-Agent) – bitte eigene Mail oder URL eintragen
+      # CONTACT: "you@example.com"
+      # Orte, deren Kartendaten beim Start vorgeladen werden (lat,lon,radius; mehrere mit Semikolon)
+      # WARM: "48.1374,11.5755,240"
+    volumes:
+      - ./data:/data
+    restart: unless-stopped

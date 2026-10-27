@@ -1,0 +1,16 @@
+Wetterinsel / Weather Island
+Copyright 2026 Joachim Haydecker
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This project uses data and services from third parties. They are NOT covered by
+the Apache-2.0 license of this code and have their own terms:
+
+- Map data: © OpenStreetMap contributors, licensed under the Open Database
+  License (ODbL) 1.0 – https://www.openstreetmap.org/copyright
+- Geocoding: Nominatim (OpenStreetMap Foundation) – https://operations.osmfoundation.org/policies/nominatim/
+- Map queries: Overpass API – https://wiki.openstreetmap.org/wiki/Overpass_API
+- Weather data: Open-Meteo (CC BY 4.0, free for non-commercial use) – https://open-meteo.com/en/license
+
+Build-time tools (not shipped inside the application code): Vite, TypeScript and
+vite-plugin-singlefile (all MIT licensed). The server uses only Node.js built-in modules.

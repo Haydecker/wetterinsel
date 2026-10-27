@@ -59,6 +59,10 @@ export function draw(shapes: Shape[], c: LatLon) {
     node(map, "path", { d: d0, fill: wt ? "#3fb8c9" : snowy ? "#e4eff2" : "#6fc94a", stroke: INK, "stroke-width": 1.8, "stroke-linejoin": "round" });
     if (wt) { const m0 = s.points[0]; node(map, "path", { d: `M${m0.x + 4} ${m0.y + 5} q6 -4 12 0 t12 0`, fill: "none", stroke: "#d8f6fb", "stroke-width": 1.4, "stroke-linecap": "round" }); }
   }
+  for (const s of projected) if (s.kind === "plaza" && s.points.length > 3) {
+    const parking = s.tags.amenity === "parking";
+    node(map, "path", { d: "M" + s.points.slice(0, -1).map(p => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join("L") + "Z", fill: parking ? (snowy ? "#e6ecf1" : "#b9c1cd") : snowy ? "#f4f1ea" : "#eadfc2", stroke: INK, "stroke-width": 1.4, "stroke-linejoin": "round" });
+  }
   drawAreas(map, feat.areas, defs, snowy, K);
   drawStreams(map, feat.streams, K);
   const roads = projected.filter(s => s.kind === "road");

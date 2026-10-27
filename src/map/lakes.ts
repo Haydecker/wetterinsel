@@ -26,7 +26,7 @@ export function thinElements(els: ElementOSM[], c: LatLon, R: number): ElementOS
 }
 
 /** Einzelne Uferlinien zu geschlossenen Ringen zusammensetzen. */
-function stitch(segs: LL[][]): LL[][] {
+export function stitch(segs: LL[][]): LL[][] {
   const pool = segs.filter(s => s.length > 1).map(s => s.slice()), rings: LL[][] = [];
   while (pool.length) {
     let cur = pool.pop()!, grew = true;

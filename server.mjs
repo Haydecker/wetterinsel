@@ -16,21 +16,24 @@ const geoFile = path.join(DATA, "geocode.json");
 let geo = {}; try { geo = JSON.parse(await fs.readFile(geoFile, "utf8")); } catch {}
 
 const q4 = n => (+n).toFixed(4);
-const mapKey = (lat, lon, r) => `v2_${q4(lat)}_${q4(lon)}_${r}`;
+const mapKey = (lat, lon, r) => `v3_${q4(lat)}_${q4(lon)}_${r}`;
+const mapKeyV2 = (lat, lon, r) => `v2_${q4(lat)}_${q4(lon)}_${r}`; // ohne Relationen und Plätze
 const mapFile = key => path.join(DATA, "map", `${key}.json`);
 const legacyKey = (lat, lon, r) => `${q4(lat)}_${q4(lon)}_${r}`; // Version 1 (ohne Gleise, Bäche usw.)
 const LIGHT_HW = '["highway"~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street|service|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link)$"]';
 const overpassQuery = (lat, lon, r) => {
-  const a = `(around:${r},${lat},${lon})`, w = f => `way${a}${f};`;
+  const a = `(around:${r},${lat},${lon})`, w = f => `way${a}${f};`, rel = f => `relation${a}["type"="multipolygon"]${f};`;
+  const RELS = rel('["building"]') + rel('["landuse"~"^(grass|meadow|forest|park|recreation_ground|village_green|farmland|orchard|allotments|cemetery|vineyard)$"]') + rel('["natural"~"^(wood|scrub|wetland)$"]') + rel('["leisure"~"^(park|garden|pitch|playground)$"]');
+  const PLAZA = w('["place"="square"]') + w('["amenity"="parking"]');
   if (r > 700) return `[out:json][timeout:90];(${w('["building"]')}${w(LIGHT_HW)}` + // große Radien: nur das Wesentliche
     w('["landuse"~"^(grass|meadow|forest|park|recreation_ground|village_green|farmland|orchard|allotments|cemetery|vineyard|basin|reservoir)$"]') +
-    w('["natural"~"^(water|wood|scrub|wetland)$"]') + w('["water"]') + w('["railway"~"^(rail|tram|light_rail|narrow_gauge)$"]') + w('["waterway"~"^(river|stream|canal|riverbank)$"]') + `);out body geom;`;
+    w('["natural"~"^(water|wood|scrub|wetland)$"]') + w('["water"]') + w('["railway"~"^(rail|tram|light_rail|narrow_gauge)$"]') + w('["waterway"~"^(river|stream|canal|riverbank)$"]') + PLAZA + RELS + `);out body geom;`;
   return `[out:json][timeout:90];(${w('["building"]')}${w('["highway"]')}` +
     w('["landuse"~"^(grass|meadow|forest|park|recreation_ground|village_green|farmland|orchard|allotments|cemetery|vineyard|basin|reservoir)$"]') +
     w('["natural"~"^(water|wood|scrub|wetland)$"]') + w('["water"]') + w('["leisure"~"^(playground|pitch|garden|park|sports_centre|swimming_pool)$"]') +
     w('["railway"~"^(rail|tram|light_rail|narrow_gauge|platform)$"]') + w('["waterway"~"^(river|stream|canal|ditch|drain|riverbank)$"]') +
     w('["power"~"^(line|minor_line)$"]') + w('["barrier"~"^(hedge|wall|city_wall|retaining_wall)$"]') + w('["public_transport"="platform"]') +
-    `node${a}["highway"="bus_stop"];node${a}["railway"~"^(halt|station|tram_stop)$"];);out body geom;`;
+    `node${a}["highway"="bus_stop"];node${a}["railway"~"^(halt|station|tram_stop)$"];` + PLAZA + RELS + `);out body geom;`;
 };
 
 async function fetchMirrors(query) {
@@ -49,7 +52,7 @@ function fetchAndStore(lat, lon, r) {
   const key = mapKey(lat, lon, r);
   if (pending.has(key)) return pending.get(key);
   const p = (async () => {
-    const elements = await fetchMirrors(overpassQuery(q4(lat), q4(lon), r));
+    const elements = (await fetchMirrors(overpassQuery(q4(lat), q4(lon), r))).map(e => e.type === "relation" && e.members ? { ...e, members: e.members.map(m => m.geometry ? { ...m, geometry: thin(m.geometry, +q4(lat), +q4(lon), r) } : m) } : e);
     await fs.writeFile(mapFile(key), JSON.stringify({ t: Date.now(), lat: +q4(lat), lon: +q4(lon), r, elements }));
     log("Karte gespeichert", key, elements.length, "Elemente");
     return elements;
@@ -110,7 +113,7 @@ async function api(req, res, url) {
     if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return json(res, 400, { error: "lat/lon ungültig" });
     const key = mapKey(lat, lon, r), hit = await readMap(key);
     if (hit) return json(res, 200, { elements: hit.elements, cached: true, savedAt: hit.t });
-    const old1 = await readMap(legacyKey(lat, lon, r)); // ältere Karte sofort zeigen, neue im Hintergrund holen
+    const old1 = (await readMap(mapKeyV2(lat, lon, r))) ?? (await readMap(legacyKey(lat, lon, r))); // ältere Karte sofort zeigen, neue im Hintergrund holen
     if (old1) { fetchAndStore(lat, lon, r).catch(() => retryLater(lat, lon, r)); return json(res, 200, { elements: old1.elements, cached: true, stale: true, savedAt: old1.t }); }
     try { const elements = await fetchAndStore(lat, lon, r); return json(res, 200, { elements, cached: false, savedAt: Date.now() }); }
     catch (e) { log("Overpass nicht erreichbar", key); retryLater(lat, lon, r); return json(res, 503, { error: "Kartenserver überlastet – der Server versucht es im Hintergrund weiter.", retry: true }, { "Retry-After": "30" }); }

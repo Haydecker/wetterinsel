@@ -30,18 +30,19 @@ export async function osm(c: LatLon, id: number): Promise<ElementOSM[]> {
 
 export async function osmDirect(c: LatLon, r: number): Promise<ElementOSM[]> {
   const a = `(around:${r},${c.lat},${c.lon})`;
-  const w = (f: string) => `way${a}${f};`;
+  const w = (f: string) => `way${a}${f};`, rel = (f: string) => `relation${a}["type"="multipolygon"]${f};`;
+  const EXTRA = w('["place"="square"]') + w('["amenity"="parking"]') + rel('["building"]') + rel('["landuse"~"^(grass|meadow|forest|park|recreation_ground|village_green|farmland|orchard|allotments|cemetery|vineyard)$"]') + rel('["natural"~"^(wood|scrub|wetland)$"]') + rel('["leisure"~"^(park|garden|pitch|playground)$"]');
   const light = r > 700, hw = light ? '["highway"~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street|service|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link)$"]' : '["highway"]';
   const q = light ? `[out:json][timeout:90];(${w('["building"]')}${w(hw)}` +
     w('["landuse"~"^(grass|meadow|forest|park|recreation_ground|village_green|farmland|orchard|allotments|cemetery|vineyard|basin|reservoir)$"]') +
-    w('["natural"~"^(water|wood|scrub|wetland)$"]') + w('["water"]') + w('["railway"~"^(rail|tram|light_rail|narrow_gauge)$"]') + w('["waterway"~"^(river|stream|canal|riverbank)$"]') + `);out body geom;` :
+    w('["natural"~"^(water|wood|scrub|wetland)$"]') + w('["water"]') + w('["railway"~"^(rail|tram|light_rail|narrow_gauge)$"]') + w('["waterway"~"^(river|stream|canal|riverbank)$"]') + EXTRA + `);out body geom;` :
     `[out:json][timeout:60];(${w('["building"]')}${w(hw)}` +
     w('["landuse"~"^(grass|meadow|forest|park|recreation_ground|village_green|farmland|orchard|allotments|cemetery|vineyard|basin|reservoir)$"]') +
     w('["natural"~"^(water|wood|scrub|wetland)$"]') + w('["water"]') + w('["leisure"~"^(playground|pitch|garden|park|sports_centre|swimming_pool)$"]') +
     w('["railway"~"^(rail|tram|light_rail|narrow_gauge|platform)$"]') + w('["waterway"~"^(river|stream|canal|ditch|drain|riverbank)$"]') +
     w('["power"~"^(line|minor_line)$"]') + w('["barrier"~"^(hedge|wall|city_wall|retaining_wall)$"]') + w('["public_transport"="platform"]') +
-    `node${a}["highway"="bus_stop"];node${a}["railway"~"^(halt|station|tram_stop)$"];);out body geom;`;
-  const key=`wi-osm2-${c.lat.toFixed(4)}-${c.lon.toFixed(4)}-${r}`;
+    `node${a}["highway"="bus_stop"];node${a}["railway"~"^(halt|station|tram_stop)$"];` + EXTRA + `);out body geom;`;
+  const key=`wi-osm3-${c.lat.toFixed(4)}-${c.lon.toFixed(4)}-${r}`;
   try { const hit=JSON.parse(localStorage.getItem(key)??"null") as {t:number;e:ElementOSM[]}|null; if(hit&&Date.now()-hit.t<7*864e5) return hit.e; } catch {}
   const mirrors=["https://overpass-api.de/api/interpreter","https://lz4.overpass-api.de/api/interpreter","https://z.overpass-api.de/api/interpreter","https://overpass.private.coffee/api/interpreter","https://overpass.kumi.systems/api/interpreter"];
   const ask=async(endpoint:string)=>{

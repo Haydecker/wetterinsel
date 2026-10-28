@@ -1,7 +1,7 @@
 import { ElementOSM, Lake, LatLon, P } from "../types";
 import { INK, f1, inPoly, node, rng, smooth } from "../util";
 import { CX, CY, RX, RY } from "./geometry";
-import { iso, local } from "./projection";
+import { local } from "./projection";
 
 type LL = { lat: number; lon: number };
 const key = (p: LL) => `${p.lat.toFixed(7)},${p.lon.toFixed(7)}`;
@@ -54,16 +54,16 @@ export function lakesFrom(elements: ElementOSM[], c: LatLon): Lake[] {
     if (!e.members) continue;
     const ways = (role: (r: string) => boolean) => e.members!.filter(m => m.type === "way" && m.geometry && role(m.role ?? "")).map(m => m.geometry!);
     const rings = [...stitch(ways(r => r !== "inner")), ...stitch(ways(r => r === "inner"))]
-      .map(r => (key(r[0]) === key(r[r.length - 1]) ? r.slice(0, -1) : r).map(p => iso(local(p, c)))).filter(r => r.length >= 3);
-    if (rings.length) out.push({ rings });
+      .map(r => (key(r[0]) === key(r[r.length - 1]) ? r.slice(0, -1) : r).map(p => local(p, c))).filter(r => r.length >= 3);
+    if (rings.length) out.push({ raw: rings });
   }
   return out;
 }
 
-const inLakes = (lakes: Lake[], p: P) => lakes.some(l => l.rings.reduce((a, r) => a !== inPoly(p, r), false));
+const inLakes = (lakes: { rings: P[][] }[], p: P) => lakes.some(l => l.rings.reduce((a, r) => a !== inPoly(p, r), false));
 
 /** Zeichnet Seen (unter allem anderen) samt Segelbooten und liefert einen Wasser-Test. */
-export function drawLakes(map: Element, defs: Element, lakes: Lake[]): (p: P) => boolean {
+export function drawLakes(map: Element, defs: Element, lakes: { rings: P[][] }[]): (p: P) => boolean {
   if (!lakes.length) return () => false;
   const pat = node(defs, "pattern", { id: "lakewaves", width: 46, height: 28, patternUnits: "userSpaceOnUse" });
   node(pat, "path", { d: "M3 8 q5 -5 10 0 t10 0 M26 21 q5 -5 10 0 t10 0", fill: "none", stroke: "#d8f6fb", "stroke-width": 1.5, "stroke-linecap": "round", opacity: ".85" });

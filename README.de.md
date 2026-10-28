@@ -15,6 +15,7 @@ Die Wetterinsel läuft als selbst gehostete **Docker**-App oder als **einzelne H
 ## Highlights
 - Echte Kartendaten: Gebäude, Straßen, Wege, Gleise mit kleinem Zug, Bäche, Teiche, **Seen** (z. B. Bodensee mit Segelbooten), Parks, Äcker, Spielplätze, Hecken, Stromleitungen, Haltestellen
 - Live-Wetter: Sonne, Wolken, die sich mit echter Windrichtung und -stärke bewegen, Regen, Nieselregen, Schnee, Nebel, Gewitter, Vögel, Rauch aus Schornsteinen bei Kälte
+- Die ganze Scheibe per Ziehen (Maus oder Finger) drehen, wenn der Kompass an ist
 - Tag, Dämmerung und Nacht nach echtem Sonnenauf-/-untergang; Mondphase; optionaler Kompass
 - Vorhersage (Stunden oder Tage) im Bild oder in der Seitenleiste
 - Zoom, Verschieben und Touch für Smartphone und Tablet; als Web-App installierbar

@@ -8,5 +8,7 @@ export const state = {
   lastShapes: [] as Shape[],
   lastLakes: [] as Lake[],
   drawn: false,
+  rotating: false,
+  root: null as Element | null,
   runId: 0,
 };

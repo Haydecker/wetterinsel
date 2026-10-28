@@ -5,7 +5,7 @@ import { address } from "./dom";
 export type Opts = {
   adresse: string; lat?: number; lon?: number;
   wetter: boolean; temperatur: boolean; wind: boolean; zeit: boolean; textpos: string;
-  objekte: string[]; kiosk: boolean; zoom: boolean; kompass: boolean; mondphase: boolean; mondalter?: number; bg: string; radius: number; animation: boolean; refresh: number;
+  objekte: string[]; kiosk: boolean; zoom: boolean; kompass: boolean; mondphase: boolean; mondalter?: number; bg: string; radius: number; animation: boolean; refresh: number; drehung: number;
   vorhersage: "aus" | "stunden" | "tage"; einheit: "celsius" | "fahrenheit"; sprache: "de" | "en"; testwetter: string; tageszeit: "auto" | "tag" | "nacht";
 };
 
@@ -13,7 +13,7 @@ export type Opts = {
 export const OBJEKTE = ["gleise", "gewaesser", "freizeit", "landnutzung", "strom", "hecken", "haltestellen"];
 export const DEFAULT_ADDRESS = "Marienplatz, 80331 München, Deutschland";
 
-export const ALIASES: Record<string, string> = { wetterdaten: "wetter", kios: "kiosk", address: "adresse", ort: "adresse", language: "sprache", lang: "sprache", unit: "einheit" };
+export const ALIASES: Record<string, string> = { wetterdaten: "wetter", kios: "kiosk", address: "adresse", ort: "adresse", language: "sprache", rotation: "drehung", rot: "drehung", lang: "sprache", unit: "einheit" };
 
 export const TESTWETTER: Record<string, Partial<Weather>> = {
   klar: { code: 0, clouds: 5, rain: 0, wind: 8 }, heiter: { code: 1, clouds: 30, rain: 0 }, wolkig: { code: 2, clouds: 60, rain: 0 }, bedeckt: { code: 3, clouds: 95, rain: 0 },
@@ -50,6 +50,7 @@ export function parseOpts(search: string): Opts {
     objekte: parseObjekte(q.get("objekte")),
     kiosk, zoom: bool(q.get("zoom"), !kiosk), kompass: bool(q.get("kompass"), false), mondphase: bool(q.get("mondphase"), false), mondalter: Number.isFinite(parseFloat(q.get("mondalter") ?? "")) ? Math.max(0, Math.min(29.5, parseFloat(q.get("mondalter")!))) : undefined, bg: (q.get("bg") ?? "").trim().replace(/^#/, "").toLowerCase(),
     radius: Math.round(num("radius", 200, 100, 1500) / 10) * 10, animation: bool(q.get("animation"), !matchMedia("(prefers-reduced-motion: reduce)").matches), refresh: Math.round(num("refresh", 10, 0, 240)),
+    drehung: ((Math.round(num("drehung", 0, -3600, 3600)) % 360) + 360) % 360,
     vorhersage: pick("vorhersage", ["aus", "stunden", "tage"], "aus"), einheit: pick("einheit", ["celsius", "fahrenheit"], "celsius"), sprache: pick("sprache", ["de", "en"], defaultLang(kiosk)),
     testwetter: pick("testwetter", [...Object.keys(TESTWETTER), ""], ""), tageszeit: pick("tageszeit", ["auto", "tag", "nacht"], "auto"),
   };
@@ -68,6 +69,7 @@ export function buildQuery(o: Opts, useCoords: boolean, c: LatLon | null): strin
   if (o.objekte.length !== OBJEKTE.length) q.set("objekte", o.objekte.length ? o.objekte.join(",") : "keine");
   for (const k of ["textpos", "bg", "radius", "refresh", "vorhersage", "einheit", "testwetter", "tageszeit"] as (keyof Opts)[]) if (String(o[k]) !== String(d[k]) && String(o[k]) !== "") q.set(k, String(o[k]));
   if (o.sprache !== "de") q.set("sprache", o.sprache);
+  if (o.drehung) q.set("drehung", String(Math.round(o.drehung)));
   return q.toString();
 }
 

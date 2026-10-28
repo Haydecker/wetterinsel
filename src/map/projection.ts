@@ -8,6 +8,13 @@ export function local(p: LatLon, c: LatLon): P {
 
 export function iso(p: P): P { return { x: p.x-p.y, y: -(p.x+p.y)*0.5 }; }
 
+/** Bodenpunkt (Meter, x = Ost, y = Nord) um den Mittelpunkt im Uhrzeigersinn drehen (Scheibe drehen). */
+export function rotate(p: P, deg: number): P {
+  if (!deg) return p;
+  const a = deg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+  return { x: p.x * c + p.y * s, y: -p.x * s + p.y * c };
+}
+
 const AREA_LANDUSE = ["farmland", "orchard", "allotments", "cemetery", "vineyard"];
 const AREA_LEISURE = ["playground", "pitch", "sports_centre", "swimming_pool"];
 const GREEN_LANDUSE = ["grass", "meadow", "forest", "park", "recreation_ground", "village_green"];
@@ -66,7 +73,7 @@ export function shapesFrom(elements: ElementOSM[], c: LatLon): Shape[] {
     if(t.height) { const n=parseFloat(t.height.replace(",", ".")); if(Number.isFinite(n)) height=Math.max(3,Math.min(35,n)); }
     else if(t["building:levels"]) height=Math.max(3,Math.min(35,(parseFloat(t["building:levels"])||2)*3));
     if(t.building==="shed"||t.building==="garage") height=3.2;
-    out.push({points:meters.map(iso),tags:t,kind,id:`${e.type}-${e.id}${e.part?`-${e.part}`:""}`,height});
+    out.push({points:meters.map(iso),raw:meters,tags:t,kind,id:`${e.type}-${e.id}${e.part?`-${e.part}`:""}`,height});
   }
   return out;
 }

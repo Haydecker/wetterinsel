@@ -37,7 +37,7 @@ export function wireForm(hooks: { reload: () => void; arm: () => void; rerender:
     if (opts.radius !== before) { clearTimeout(reloadTimer); reloadTimer = window.setTimeout(() => hooks.reload(), 700); return; }
     if (id === "o-sprache") setLanguage(S("o-sprache").value as "de" | "en");
     if (id === "o-refresh") hooks.arm();
-    if (id === "o-zoom") applyZoomMode();
+    if (id === "o-zoom" || id === "o-kompass") applyZoomMode();
     hooks.rerender();
   });
   address.addEventListener("input", () => { address.classList.remove("invalid"); formToOpts(); updateUrl(); });

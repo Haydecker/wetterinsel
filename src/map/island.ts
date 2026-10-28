@@ -17,6 +17,7 @@ import { moonBadge } from "../weather/effects";
 import { drawBirds } from "../weather/birds";
 import { Features, drawAreas, drawHedges, drawPower, drawRails, drawStreams, drawTrain, makeBlocker, on, splitFeatures, stopSign } from "./features";
 import { drawLakes } from "./lakes";
+import { iso, rotate } from "./projection";
 import { drawCars, drawLamps, drawSmoke, drawWater, fence, planFences } from "./details";
 
 export function drawBackdrop(svg: SVGSVGElement, night: boolean, rnd: () => number, bg: string, sky2: [string, string]) {
@@ -29,7 +30,8 @@ export function drawBackdrop(svg: SVGSVGElement, night: boolean, rnd: () => numb
   if (night) for (let i = 0; i < 40; i++) node(svg, "circle", { cx: rnd() * 1000, cy: rnd() * 150, r: .8 + rnd() * 1.2, fill: "#fff", opacity: ".8" });
 }
 
-export function draw(shapes: Shape[], c: LatLon) {
+export function draw(shapes0: Shape[], c: LatLon) {
+  const proj = (m: P): P => iso(rotate(m, opts.drehung)), shapes = shapes0.map(s => ({ ...s, points: s.raw.map(proj) }));
   svg.replaceChildren(); setVB(); svg.classList.toggle("noanim", !opts.animation);
   const w = state.weatherNow, di = dayInfo(w), night = di.night;
   const snowy = !!w && [71, 73, 75, 77, 85, 86].includes(w.code);
@@ -41,7 +43,7 @@ export function draw(shapes: Shape[], c: LatLon) {
   const clip = node(defs, "clipPath", { id: "clip" }); node(clip, "path", { d: ELLIPSE });
   drawBackdrop(svg, night, rng(7), opts.bg, skyColors(night, di.twilight));
   const fc = opts.vorhersage !== "aus", rootT = fc && opts.kompass ? "translate(500 262) scale(.74) translate(-500 -262)" : fc ? "translate(500 250) scale(.86) translate(-500 -250)" : opts.kompass ? "translate(500 280) scale(.9) translate(-500 -280)" : "";
-  const root = node(svg, "g", rootT ? { transform: rootT } : {});
+  const root = node(svg, "g", rootT ? { transform: rootT } : {}); state.root = root;
   if (opts.kompass) drawCompass(root, w); else node(root, "ellipse", { cx: CX, cy: CY + 255, rx: RX * .95, ry: 22, fill: INK, opacity: ".2" });
   node(root, "path", { d: sideOf(36), fill: "#8a5a32", stroke: INK, "stroke-width": 3.5, "stroke-linejoin": "round" });
   node(root, "path", { d: sideOf(18), fill: "#b27a45", stroke: INK, "stroke-width": 3, "stroke-linejoin": "round" });
@@ -51,7 +53,7 @@ export function draw(shapes: Shape[], c: LatLon) {
   for (let i = 0; i < 90; i++) node(map, "path", { d: `M${110 + rnd() * 780} ${100 + rnd() * 370} l3 -5 l3 5`, fill: "none", stroke: snowy ? "#c4d6df" : "#4ea53a", "stroke-width": 1.2, opacity: ".6", "stroke-linecap": "round" });
   const S = 1.45 * 200 / opts.radius, K = Math.max(.45, S / 1.45), projected = shapes.map(s => ({ ...s, points: s.points.map(p => ({ x: p.x * S + CX, y: p.y * S + CY })) }));
   const feat: Features = splitFeatures(projected), blocked = makeBlocker(feat, K);
-  const lakesP = on("gewaesser") ? state.lastLakes.map(l => ({ rings: l.rings.map(r => r.map(p => ({ x: p.x * S + CX, y: p.y * S + CY }))) })) : [];
+  const lakesP = on("gewaesser") ? state.lastLakes.map(l => ({ rings: l.raw.map(r => r.map(m => { const p = proj(m); return { x: p.x * S + CX, y: p.y * S + CY }; })) })) : [];
   const inLake = drawLakes(map, defs, lakesP);
   const greens = projected.filter(s => s.kind === "green" || (s.kind === "water" && on("gewaesser")));
   for (const s of greens) if (s.points.length > 2) {
@@ -118,7 +120,7 @@ export function draw(shapes: Shape[], c: LatLon) {
   drawSmoke(root, smokers.filter((_, i) => i % step === 0), w); drawPower(root, feat.power, K);
   if (night) node(root, "path", { d: ELLIPSE, fill: "#0b1e4a", opacity: (.28 * (1 - di.twilight * .6)).toFixed(2), "pointer-events": "none", style: "mix-blend-mode:multiply" });
   else if (di.twilight > 0) node(root, "path", { d: ELLIPSE, fill: "#ff9d4d", opacity: (.18 * di.twilight).toFixed(2), "pointer-events": "none", style: "mix-blend-mode:multiply" });
-  const overlay = node(svg, "g", { "pointer-events": "none" }); drawBirds(overlay, w); drawWeather(overlay); if (opts.mondphase && state.weatherNow) moonBadge(overlay); weatherBubble(overlay); forecastStrip(overlay);
+  const overlay = node(svg, "g", { "pointer-events": "none" }); if (!state.rotating) { drawBirds(overlay, w); drawWeather(overlay); } if (opts.mondphase && state.weatherNow) moonBadge(overlay); weatherBubble(overlay); forecastStrip(overlay);
   if (KIOSK) { const at = node(svg, "text", { x: 996, y: 553, "text-anchor": "end", "font-size": 9, fill: night ? "#fff" : INK, opacity: ".55", "font-family": "system-ui,sans-serif" }); at.textContent = "© OpenStreetMap · Open-Meteo"; }
   state.drawn = true;
   $("stats").removeAttribute("data-i18n"); $("stats").textContent = T("stats", buildings.length, roads.length, `${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}`);

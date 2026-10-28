@@ -12,7 +12,7 @@
 | **Stimmung** | Tag, Dämmerung und Nacht nach echtem Sonnenauf-/-untergang; nasse Straßen, verschneite Dächer, wiegende Bäume, Windlinien, Vögel, Schornsteinrauch bei Kälte |
 | **Himmelsobjekte** | Sonne, Mond mit echter Mondphase (optional), optionaler Kompass unter der Insel |
 | **Infos** | Temperatur, Wind und Zeit als Text im Bild, Comic-Sprechblase, Vorhersage nach Stunden oder Tagen, °C/°F |
-| **Bedienung** | Zoom (Tasten, Mausrad, Pinch), Verschieben, Touch, Zurücksetzen; Optionen-Panel mit Link-Generator und „Aktualisieren“-Button |
+| **Bedienung** | **Scheibe drehen:** bei eingeschaltetem Kompass die Scheibe mit Maus oder einem Finger ziehen – die ganze Insel wird neu projiziert, Windpfeil und Wolkenzug folgen; die Taste „N“ dreht zurück nach Norden. Zoom (Tasten, Mausrad, Pinch), Verschieben, Touch, Zurücksetzen; Optionen-Panel mit Link-Generator und „Aktualisieren“-Button |
 | **Einbetten** | `kiosk=true` zeigt nur die Insel (transparenter oder farbiger Hintergrund) – ideal für iFrames und Wanddisplays |
 
 ## URL-Parameter
@@ -30,6 +30,7 @@ Groß-/Kleinschreibung der Namen ist egal; Wahrheitswerte: `true/false`, `ja/nei
 | `kiosk` | Wahrheitswert | `false` | Nur die Insel, ohne Seitenoberfläche |
 | `zoom` | Wahrheitswert | `true` (im Kiosk `false`) | Zoom-/Verschiebe-Bedienung |
 | `kompass` | Wahrheitswert | `false` | Kompass unter der Insel |
+| `drehung` (auch `rotation`) | 0–359 (Grad) | `0` | Scheibe im Uhrzeigersinn drehen. Wird beim Ziehen gesetzt, wenn der Kompass an ist |
 | `mondphase` | Wahrheitswert | `false` | Mondphasen-Schild anzeigen |
 | `mondalter` | 0–29,5 | – | Test: Mondalter in Tagen erzwingen |
 | `bg` | Hex-Farbe, CSS-Farbe, `transparent` | Himmelsverlauf | Hintergrund (Kiosk) |

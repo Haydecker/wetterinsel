@@ -1,5 +1,9 @@
 # Changelog / Änderungsprotokoll
 
+## 1.3.0
+- **EN:** The whole disc can be rotated by dragging (mouse or touch) when the compass is shown; the island is re-projected, wind arrow and clouds follow, "N" resets, new URL parameter `drehung`.
+- **DE:** Die ganze Scheibe lässt sich bei angezeigtem Kompass per Ziehen (Maus oder Touch) drehen; die Insel wird neu projiziert, Windpfeil und Wolken folgen, „N“ setzt zurück, neuer URL-Parameter `drehung`.
+
 ## 1.2.0
 - **EN:** Bilingual interface (German/English) with a flag switch in the header; language is remembered, follows the browser language by default and is `de` in kiosk mode unless `sprache=en` is given. Status messages, forecast, moon, compass, errors and all labels are translated.
 - **DE:** Zweisprachige Oberfläche (Deutsch/Englisch) mit Flaggen-Umschalter im Kopf; die Sprache wird gemerkt, folgt standardmäßig der Browsersprache und ist im Kiosk-Modus `de`, sofern nicht `sprache=en` gesetzt ist. Statusmeldungen, Vorhersage, Mond, Kompass, Fehler und alle Beschriftungen sind übersetzt.

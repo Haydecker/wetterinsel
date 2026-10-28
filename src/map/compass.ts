@@ -5,9 +5,11 @@ import { CX, CY, RX, RY } from "./geometry";
 import { groundToScreen } from "../weather/wind";
 
 /** Kompass-Scheibe unter der Insel: größer als die Insel, mit Himmelsrichtungen und Windpfeil. */
+export const COMPASS = { cy: CY + 18, rx: RX * 1.17, ry: 275 };
+
 export function drawCompass(root: Element, w: Weather | null) {
-  const cy = CY + 18, rx = RX * 1.17, ry = 275, font = "'Comic Sans MS','Chalkboard SE',system-ui,sans-serif";
-  const at = (bearing: number, f: number) => { const a = bearing * Math.PI / 180, vx = Math.sin(a), vy = Math.cos(a); return { x: CX + (vx - vy) * rx / Math.SQRT2 * f, y: cy - (vx + vy) / 2 * ry * Math.SQRT2 * f }; };
+  const { cy, rx, ry } = COMPASS, font = "'Comic Sans MS','Chalkboard SE',system-ui,sans-serif";
+  const at = (bearing: number, f: number) => { const a = (bearing + opts.drehung) * Math.PI / 180, vx = Math.sin(a), vy = Math.cos(a); return { x: CX + (vx - vy) * rx / Math.SQRT2 * f, y: cy - (vx + vy) / 2 * ry * Math.SQRT2 * f }; };
   node(root, "ellipse", { cx: CX, cy: cy + 14, rx, ry, fill: INK, opacity: ".2" });
   node(root, "ellipse", { cx: CX, cy: cy + 8, rx, ry, fill: "#c9b48a", stroke: INK, "stroke-width": 3 });
   node(root, "ellipse", { cx: CX, cy, rx, ry, fill: "#fff6d8", stroke: INK, "stroke-width": 3 });

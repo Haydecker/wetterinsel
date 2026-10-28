@@ -9,6 +9,7 @@ const D: Record<string, [string, string]> = {
   place_loading: ["Adresse wird geladen …", "Loading address …"],
   reload: ["Insel neu laden", "Reload island"],
   zoom_in: ["Vergrößern", "Zoom in"], zoom_out: ["Verkleinern", "Zoom out"], zoom_reset: ["Zurücksetzen", "Reset view"],
+  rot_reset: ["Nach Norden ausrichten", "Align north up"],
   svg_aria: ["Isometrische Wetterinsel", "Isometric weather island"], svg_loading: ["Lade Wetterinsel …", "Loading weather island …"],
   stats_loading: ["Kartendaten werden geladen …", "Loading map data …"],
   radius_label: ["{0} m Radius", "{0} m radius"],

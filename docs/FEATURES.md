@@ -12,7 +12,7 @@
 | **Atmosphere** | Day, dusk and night from real sunrise/sunset; wet roads, snowy roofs, swaying trees, wind streaks, birds, chimney smoke when it is cold |
 | **Sky objects** | Sun, moon with the real moon phase (optional), optional compass below the island |
 | **Info** | Temperature, wind and time as text in the picture, comic speech bubble, forecast by hours or days, °C/°F |
-| **Interaction** | Zoom (buttons, wheel, pinch), pan/drag, touch, reset; option panel with link generator and "Update" button |
+| **Interaction** | **Rotate the disc:** with the compass on, drag the disc with the mouse or one finger – the whole island is re-projected, wind arrow and cloud drift follow; the "N" button turns it back to north. Zoom (buttons, wheel, pinch), pan/drag, touch, reset; option panel with link generator and "Update" button |
 | **Embedding** | `kiosk=true` shows only the island (transparent or coloured background) – ideal for iFrames and wall displays |
 
 ## URL parameters
@@ -30,6 +30,7 @@ Parameter names are case-insensitive; booleans accept `true/false`, `yes/no`, `o
 | `kiosk` | boolean | `false` | Island only, no page UI |
 | `zoom` | boolean | `true` (`false` in kiosk) | Zoom/pan controls |
 | `kompass` | boolean | `false` | Compass below the island |
+| `drehung` (alias `rotation`) | 0–359 (degrees) | `0` | Turn the disc clockwise (north is not "up-left" any more). Set by dragging when the compass is on |
 | `mondphase` | boolean | `false` | Show moon phase badge |
 | `mondalter` | 0–29.5 | – | Test: force a moon age in days |
 | `bg` | hex colour, CSS colour, `transparent` | sky gradient | Background (kiosk) |

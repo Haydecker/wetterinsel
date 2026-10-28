@@ -13,7 +13,7 @@ import { geocode } from "./api/geocoding";
 import { fetchWeather } from "./api/weather";
 import { setWeather } from "./ui/weather-panel";
 import { draw } from "./map/island";
-import { applyZoomMode, resetView, wireZoom } from "./ui/zoom";
+import { applyZoomMode, onRotate, resetView, wireZoom } from "./ui/zoom";
 import { formToOpts, updateUrl, wireForm } from "./ui/form";
 
 import "./styles.css";
@@ -81,6 +81,12 @@ address.value = opts.lat != null && !urlHasAddr ? "" : opts.adresse;
 applyStaticTexts();
 onLanguage(() => { retranslateStatus(); S("o-sprache").value = opts.sprache; updateUrl(); rerender(); });
 $("lang-de").addEventListener("click", () => setLanguage("de")); $("lang-en").addEventListener("click", () => setLanguage("en"));
+
+let rotFrame = 0;
+onRotate(phase => {
+  if (phase === "move") { if (!rotFrame) rotFrame = requestAnimationFrame(() => { rotFrame = 0; if (state.center) draw(state.lastShapes, state.center); }); return; }
+  cancelAnimationFrame(rotFrame); rotFrame = 0; state.rotating = false; if (state.center) draw(state.lastShapes, state.center); updateUrl();
+});
 
 wireForm({ reload: () => void loadAll(state.center ? "center" : "address"), arm: armTimer, rerender, apply: applyAll }); wireZoom(); applyZoomMode(); updateUrl();
 

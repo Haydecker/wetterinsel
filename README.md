@@ -15,6 +15,7 @@ It runs as a self-hosted **Docker** app or as a **single HTML file** you can dro
 ## Highlights
 - Real map data: buildings, roads, paths, rails with a little train, streams, ponds, **lakes** (e.g. Lake Constance with sailing boats), parks, fields, playgrounds, hedges, power lines, bus stops
 - Live weather: sun, clouds moving with the real wind direction and speed, rain, drizzle, snow, fog, thunderstorm, birds, smoke from chimneys when it's cold
+- Rotate the whole disc by dragging it (mouse or finger) when the compass is on
 - Day, dusk and night from real sunrise/sunset; moon phase; optional compass
 - Forecast (hours or days) in the picture or side panel
 - Zoom, pan and touch for phones and tablets; installable as a web app

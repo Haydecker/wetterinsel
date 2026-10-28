@@ -40,3 +40,4 @@ body.kiosk{margin:0;overflow:hidden;background:transparent}.kiosk .shell{width:1
 .objs{grid-column:1/-1;border:1px solid #dce8d6;border-radius:12px;padding:8px 10px 10px;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;background:#fff}.objs legend{font-size:11px;font-weight:800;color:#4d654f;padding:0 6px}
 @media(max-width:520px){.objs{grid-template-columns:1fr}}
 .lang{margin-left:auto;display:flex;gap:8px;align-self:flex-start}.lang button{padding:3px;border:2px solid transparent;border-radius:8px;background:transparent;line-height:0;opacity:.55;transition:opacity .15s,transform .15s,border-color .15s}.lang button:hover{opacity:1}.lang button.on{opacity:1;border-color:#356d43;box-shadow:0 3px 10px #356d4330}.lang svg{display:block;border-radius:4px;box-shadow:0 0 0 1px #0002}
+.zoombar button[hidden]{display:none}

@@ -8,7 +8,7 @@ const key = (p: LL) => `${p.lat.toFixed(7)},${p.lon.toFixed(7)}`;
 const meters = (p: LL, c: LatLon) => Math.hypot((p.lon - c.lon) * 111320 * Math.cos(c.lat * Math.PI / 180), (p.lat - c.lat) * 110540);
 
 export const lakeQuery = (lat: number, lon: number, r: number) =>
-  `[out:json][timeout:90];(relation(around:${r},${lat},${lon})["type"="multipolygon"]["natural"="water"];relation(around:${r},${lat},${lon})["type"="multipolygon"]["waterway"="riverbank"];);out geom;`;
+  `[out:json][timeout:90];(relation(around:${r},${lat},${lon})["type"="multipolygon"]["natural"="water"];relation(around:${r},${lat},${lon})["type"="multipolygon"]["waterway"="riverbank"];way(around:${r},${lat},${lon})["natural"="coastline"];);out geom;`;
 
 /** Ufer weit weg vom Mittelpunkt ausdünnen (Anfang und Ende bleiben, damit Teilstücke zusammenpassen). */
 export function thin(g: LL[], c: LatLon, R: number): LL[] {
@@ -22,7 +22,7 @@ export function thin(g: LL[], c: LatLon, R: number): LL[] {
 }
 
 export function thinElements(els: ElementOSM[], c: LatLon, R: number): ElementOSM[] {
-  return els.map(e => e.members ? { ...e, members: e.members.map(m => m.geometry ? { ...m, geometry: thin(m.geometry, c, R) } : m) } : e);
+  return els.map(e => e.members ? { ...e, members: e.members.map(m => m.geometry ? { ...m, geometry: thin(m.geometry, c, R) } : m) } : e.geometry ? { ...e, geometry: thin(e.geometry, c, R) } : e);
 }
 
 /** Einzelne Uferlinien zu geschlossenen Ringen zusammensetzen. */
@@ -47,9 +47,50 @@ export function stitch(segs: LL[][]): LL[][] {
   return rings;
 }
 
-/** Seen (Multipolygon-Relationen) als Ringe in Isometrie-Metern. */
-export function lakesFrom(elements: ElementOSM[], c: LatLon): Lake[] {
+/** Küstenlinien (Land links, Wasser rechts) mit fester Richtung zu Ketten verbinden. */
+function chainCoast(segs: LL[][]): LL[][] {
+  const pool = segs.filter(s => s.length > 1).map(s => s.slice()), out: LL[][] = [];
+  while (pool.length) {
+    let cur = pool.pop()!, grew = true;
+    while (grew && key(cur[0]) !== key(cur[cur.length - 1])) {
+      grew = false;
+      for (let i = 0; i < pool.length; i++) {
+        const s = pool[i];
+        if (key(s[0]) === key(cur[cur.length - 1])) cur = cur.concat(s.slice(1)); else if (key(s[s.length - 1]) === key(cur[0])) cur = s.slice(0, -1).concat(cur); else continue;
+        pool.splice(i, 1); grew = true; break;
+      }
+    }
+    out.push(cur);
+  }
+  return out;
+}
+
+const FAR = 9000; // Meter: so weit wird das Meer über den sichtbaren Bereich hinaus gezeichnet
+const unit = (a: P, b: P): P => { const l = Math.hypot(b.x - a.x, b.y - a.y) || 1; return { x: (b.x - a.x) / l, y: (b.y - a.y) / l }; };
+const add = (a: P, d: P, f: number): P => ({ x: a.x + d.x * f, y: a.y + d.y * f });
+const right = (d: P): P => ({ x: d.y, y: -d.x });
+
+/** Meer aus Küstenlinien: Wasser liegt in Laufrichtung rechts der Linie. */
+function coastLakes(elements: ElementOSM[], c: LatLon): Lake[] {
+  const segs = elements.filter(e => e.type === "way" && e.tags?.natural === "coastline" && e.geometry).map(e => e.geometry!);
   const out: Lake[] = [];
+  for (const ch of chainCoast(segs)) {
+    const m = ch.map(p => local(p, c));
+    if (m.length < 3) continue;
+    if (key(ch[0]) === key(ch[ch.length - 1])) { // geschlossen: Insel (Land innen) oder Binnenmeer
+      const ring = m.slice(0, -1), area = ring.reduce((s, p, i) => { const q = ring[(i + 1) % ring.length]; return s + p.x * q.y - q.x * p.y; }, 0);
+      out.push({ raw: area > 0 ? [[{ x: -FAR, y: -FAR }, { x: FAR, y: -FAR }, { x: FAR, y: FAR }, { x: -FAR, y: FAR }], ring] : [ring] });
+      continue;
+    }
+    const d0 = unit(m[1], m[0]), d1 = unit(m[m.length - 2], m[m.length - 1]), s = add(m[0], d0, FAR), e = add(m[m.length - 1], d1, FAR);
+    out.push({ raw: [[s, ...m, e, add(e, right(d1), FAR), add(s, right({ x: -d0.x, y: -d0.y }), FAR)]] });
+  }
+  return out;
+}
+
+/** Seen (Multipolygon-Relationen) und Meere (Küstenlinien) als Ringe in Metern. */
+export function lakesFrom(elements: ElementOSM[], c: LatLon): Lake[] {
+  const out: Lake[] = coastLakes(elements, c);
   for (const e of elements) {
     if (!e.members) continue;
     const ways = (role: (r: string) => boolean) => e.members!.filter(m => m.type === "way" && m.geometry && role(m.role ?? "")).map(m => m.geometry!);

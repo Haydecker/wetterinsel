@@ -6,7 +6,7 @@
 | Bereich | Details |
 |---|---|
 | **Karte** | Gebäude (Satteldächer, Schornsteine, wackelige Comic-Konturen), Straßen und Wege, Brücken, Bäume und Büsche, Zäune, Laternen, fahrende und parkende Autos |
-| **Wasser** | Bäche, Flüsse, Teiche und **Seen** (OSM-Relationen, z. B. Bodensee, inkl. Inseln) mit Wellen, Enten und Segelbooten |
+| **Wasser** | Bäche, Flüsse, Teiche, **Seen** (OSM-Relationen, z. B. Bodensee, inkl. Inseln) und **Ozeane/Meere** (aus Küstenlinien) mit Wellen, Enten und Segelbooten |
 | **Objekte** | Gleise mit kleinem Zug, Spiel- und Sportplätze, Äcker/Obstwiesen/Kleingärten/Friedhöfe, Stromleitungen, Hecken und Mauern, Bushaltestellen und Bahnsteige – jede Gruppe lässt sich ein- und ausschalten |
 | **Wetter** | Klar, heiter, bedeckt, Nebel, Nieselregen, Regen, Gewitter, Schnee. Wolken ziehen in der echten Windrichtung, die Geschwindigkeit folgt der Windstärke; leicht transparente Comic-Wolken |
 | **Stimmung** | Tag, Dämmerung und Nacht nach echtem Sonnenauf-/-untergang; nasse Straßen, verschneite Dächer, wiegende Bäume, Windlinien, Vögel, Schornsteinrauch bei Kälte |

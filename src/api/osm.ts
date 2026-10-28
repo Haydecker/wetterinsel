@@ -64,7 +64,7 @@ export async function lakes(c: LatLon): Promise<ElementOSM[]> {
   const r = queryRadius();
   const s = await viaServer(`/api/lakes?lat=${c.lat.toFixed(5)}&lon=${c.lon.toFixed(5)}&r=${r}`);
   if (s) return s.status === 200 ? (s.data.elements as ElementOSM[]) : [];
-  const key = `wi-lake1-${c.lat.toFixed(4)}-${c.lon.toFixed(4)}-${r}`;
+  const key = `wi-lake2-${c.lat.toFixed(4)}-${c.lon.toFixed(4)}-${r}`;
   try { const hit = JSON.parse(localStorage.getItem(key) ?? "null") as { t: number; e: ElementOSM[] } | null; if (hit && Date.now() - hit.t < 7 * 864e5) return hit.e; } catch {}
   const q = lakeQuery(+c.lat.toFixed(4), +c.lon.toFixed(4), r);
   const ask = async (endpoint: string) => {

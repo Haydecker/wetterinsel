@@ -35,7 +35,7 @@ function kindOf(t: Record<string, string>, isNode: boolean): Shape["kind"] | nul
   if(["hedge","wall","city_wall","retaining_wall"].includes(t.barrier??"")) return "hedge";
   if("water" in t || t.natural==="water" || ["basin","reservoir"].includes(t.landuse??"") || t.waterway==="riverbank") return "water";
   if(AREA_LANDUSE.includes(t.landuse??"")||AREA_LEISURE.includes(t.leisure??"")) return "area";
-  if(GREEN_LANDUSE.includes(t.landuse??"") || ["wood","scrub","wetland"].includes(t.natural??"") || ["park","garden"].includes(t.leisure??"")) return "green";
+  if("wetland" in t || t.natural==="floodplain" || GREEN_LANDUSE.includes(t.landuse??"") || ["wood","scrub","wetland"].includes(t.natural??"") || ["park","garden"].includes(t.leisure??"")) return "green";
   return null;
 }
 

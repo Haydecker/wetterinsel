@@ -81,14 +81,15 @@ function thin(g, lat, lon, r) {
   for (let i = 1; i < g.length - 1; i++) { const d = m(g[i], c), sp = d < r * 1.6 ? 0 : Math.min(400, d * .04); if (sp === 0 || m(g[i], last) >= sp) { out.push(g[i]); last = g[i]; } }
   out.push(g[g.length - 1]); return out;
 }
-const lakeKey = (lat, lon, r) => `lakes1_${q4(lat)}_${q4(lon)}_${r}`, lakePending = new Map(), lakeRetrying = new Set();
+const lakeKey = (lat, lon, r) => `lakes2_${q4(lat)}_${q4(lon)}_${r}`, lakePending = new Map(), lakeRetrying = new Set();
 function fetchLakes(lat, lon, r) {
   const key = lakeKey(lat, lon, r);
   if (lakePending.has(key)) return lakePending.get(key);
   const p = (async () => {
-    const raw = await fetchMirrors(`[out:json][timeout:90];(relation(around:${r},${q4(lat)},${q4(lon)})["type"="multipolygon"]["natural"="water"];relation(around:${r},${q4(lat)},${q4(lon)})["type"="multipolygon"]["waterway"="riverbank"];);out geom;`);
-    const elements = raw.filter(e => e.type === "relation").map(e => ({ type: "relation", id: e.id, tags: { natural: e.tags?.natural, water: e.tags?.water, name: e.tags?.name },
-      members: (e.members ?? []).filter(m => m.type === "way" && m.geometry).map(m => ({ type: "way", role: m.role, geometry: thin(m.geometry, lat, lon, r) })) }));
+    const raw = await fetchMirrors(`[out:json][timeout:90];(relation(around:${r},${q4(lat)},${q4(lon)})["type"="multipolygon"]["natural"="water"];relation(around:${r},${q4(lat)},${q4(lon)})["type"="multipolygon"]["waterway"="riverbank"];way(around:${r},${q4(lat)},${q4(lon)})["natural"="coastline"];);out geom;`);
+    const coast = raw.filter(e => e.type === "way" && e.geometry).map(e => ({ type: "way", id: e.id, tags: { natural: "coastline" }, geometry: thin(e.geometry, lat, lon, r) }));
+    const elements = coast.concat(raw.filter(e => e.type === "relation").map(e => ({ type: "relation", id: e.id, tags: { natural: e.tags?.natural, water: e.tags?.water, name: e.tags?.name },
+      members: (e.members ?? []).filter(m => m.type === "way" && m.geometry).map(m => ({ type: "way", role: m.role, geometry: thin(m.geometry, lat, lon, r) })) })));
     await fs.writeFile(mapFile(key), JSON.stringify({ t: Date.now(), elements })); log("Seen gespeichert", key, elements.length, "Relationen");
     return elements;
   })().finally(() => lakePending.delete(key));

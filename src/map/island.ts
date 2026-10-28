@@ -93,7 +93,7 @@ export function draw(shapes0: Shape[], c: LatLon) {
   const inIsland = (p: P) => ((p.x - CX) / RX) ** 2 + ((p.y - CY) / RY) ** 2 < .92;
   const trees: { x: number; y: number; s: number; seed: number }[] = [];
   const tr = rng(99);
-  for (const g2 of greens) if (g2.kind === "green" && g2.tags.natural !== "wetland" && g2.points.length > 2) {
+  for (const g2 of greens) if (g2.kind === "green" && g2.tags.natural !== "wetland" && g2.tags.natural !== "floodplain" && !("wetland" in g2.tags) && g2.points.length > 2) {
     const xs = g2.points.map(p => p.x), ys2 = g2.points.map(p => p.y);
     for (let y = Math.min(...ys2); y < Math.max(...ys2); y += 13) for (let x = Math.min(...xs); x < Math.max(...xs); x += 13) {
       const p = { x: x + tr() * 9, y: y + tr() * 9 };

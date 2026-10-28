@@ -6,7 +6,7 @@
 | Area | Details |
 |---|---|
 | **Map** | Buildings (gabled roofs, chimneys, wobbly comic outlines), roads and paths, bridges, trees and bushes, fences, lamps, parked and driving cars |
-| **Water** | Streams, rivers, ponds and **lakes** (OSM multipolygon relations, e.g. Lake Constance, including islands) with waves, ducks and sailing boats |
+| **Water** | Streams, rivers, ponds, **lakes** (OSM multipolygon relations, e.g. Lake Constance, including islands) and **oceans/seas** (from coastlines) with waves, ducks and sailing boats |
 | **Objects** | Rails with a small train, playgrounds and sports pitches, fields/orchards/allotments/cemeteries, power lines, hedges and walls, bus stops and platforms – each group can be switched on or off |
 | **Weather** | Clear, partly cloudy, overcast, fog, drizzle, rain, thunderstorm, snow. Clouds drift in the real wind direction at a speed proportional to the wind speed; semi-transparent comic clouds |
 | **Atmosphere** | Day, dusk and night from real sunrise/sunset; wet roads, snowy roofs, swaying trees, wind streaks, birds, chimney smoke when it is cold |

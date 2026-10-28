@@ -1,5 +1,9 @@
 # Changelog / Änderungsprotokoll
 
+## 1.3.1
+- **EN:** Oceans and seas are drawn from OSM coastlines (water lies to the right of the coastline direction), including sailing boats; wetlands and floodplains are plain green areas without trees.
+- **DE:** Ozeane und Meere werden aus den OSM-Küstenlinien gezeichnet (Wasser liegt rechts der Linienrichtung), samt Segelbooten; Sumpf- und Überschwemmungsgebiete sind schlichte grüne Flächen ohne Bäume.
+
 ## 1.3.0
 - **EN:** The whole disc can be rotated by dragging (mouse or touch) when the compass is shown; the island is re-projected, wind arrow and clouds follow, "N" resets, new URL parameter `drehung`.
 - **DE:** Die ganze Scheibe lässt sich bei angezeigtem Kompass per Ziehen (Maus oder Touch) drehen; die Insel wird neu projiziert, Windpfeil und Wolken folgen, „N“ setzt zurück, neuer URL-Parameter `drehung`.

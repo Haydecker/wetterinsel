@@ -1,4 +1,5 @@
 import { OBJEKTE, Opts, buildQuery, opts } from "../options";
+import { setLanguage, tr } from "../i18n";
 import { $, I, S, address } from "../dom";
 import { state } from "../state";
 import { applyZoomMode } from "../ui/zoom";
@@ -8,7 +9,7 @@ export function optsToForm() {
   for (const k of OBJEKTE) I(`o-ob-${k}`).checked = opts.objekte.includes(k);
   I("o-bg").value = opts.bg; I("o-radius").value = String(opts.radius); I("o-refresh").value = String(opts.refresh);
   for (const k of ["textpos", "vorhersage", "einheit", "sprache", "testwetter", "tageszeit"] as const) S(`o-${k}`).value = opts[k];
-  $("o-radius-val").textContent = `${opts.radius} m`; $("radius-label").textContent = `${opts.radius} m Radius`;
+  $("o-radius-val").textContent = `${opts.radius} m`; $("radius-label").textContent = tr("radius_label", opts.radius);
 }
 
 export function formToOpts() {
@@ -24,7 +25,7 @@ export function formToOpts() {
 export function updateUrl() {
   const qs = buildQuery(opts, I("o-coords").checked, state.center), full = `${location.origin}${location.pathname}${qs ? `?${qs}` : ""}`;
   ($("o-url") as unknown as HTMLTextAreaElement).value = full; ($("o-open") as HTMLAnchorElement).href = full;
-  $("o-radius-val").textContent = `${opts.radius} m`; $("radius-label").textContent = `${opts.radius} m Radius`;
+  $("o-radius-val").textContent = `${opts.radius} m`; $("radius-label").textContent = tr("radius_label", opts.radius);
 }
 
 let reloadTimer: number | undefined;
@@ -34,6 +35,7 @@ export function wireForm(hooks: { reload: () => void; arm: () => void; rerender:
     const before = opts.radius, id = (e.target as HTMLElement).id; if (id === "o-coords") { updateUrl(); return; }
     formToOpts(); updateUrl();
     if (opts.radius !== before) { clearTimeout(reloadTimer); reloadTimer = window.setTimeout(() => hooks.reload(), 700); return; }
+    if (id === "o-sprache") setLanguage(S("o-sprache").value as "de" | "en");
     if (id === "o-refresh") hooks.arm();
     if (id === "o-zoom") applyZoomMode();
     hooks.rerender();
@@ -43,6 +45,6 @@ export function wireForm(hooks: { reload: () => void; arm: () => void; rerender:
   $("o-copy").addEventListener("click", async () => {
     const t = $("o-url") as unknown as HTMLTextAreaElement;
     try { await navigator.clipboard.writeText(t.value); } catch { t.select(); document.execCommand("copy"); }
-    $("o-copy").textContent = "Kopiert ✓"; setTimeout(() => ($("o-copy").textContent = "Link kopieren"), 1600);
+    $("o-copy").textContent = tr("copied"); setTimeout(() => ($("o-copy").textContent = tr("copy")), 1600);
   });
 }

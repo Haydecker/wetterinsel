@@ -1,4 +1,5 @@
 import { Weather } from "../types";
+import { tr } from "../i18n";
 import { opts } from "../options";
 import { $ } from "../dom";
 import { state } from "../state";
@@ -18,12 +19,12 @@ export function hourCards(w: Weather, n = 6): Card[] {
 
 export function dayCards(w: Weather, n = 5): Card[] {
   const d = w.daily; if (!d) return [];
-  return d.time.slice(0, n).map((t, i) => ({ title: i === 0 ? (opts.sprache === "de" ? "Heute" : "Today") : new Date(t + "T12:00").toLocaleDateString(opts.sprache, { weekday: "short" }), icon: iconWeather(d.code[i], 1), kind: kindOf(d.code[i], 1), t1: `${fmtTemp(d.max[i])} / ${fmtTemp(d.min[i])}`.replace(/°[CF]/g, "°"), t2: `💧 ${d.pop[i] ?? 0}%` }));
+  return d.time.slice(0, n).map((t, i) => ({ title: i === 0 ? tr("today") : new Date(t + "T12:00").toLocaleDateString(opts.sprache, { weekday: "short" }), icon: iconWeather(d.code[i], 1), kind: kindOf(d.code[i], 1), t1: `${fmtTemp(d.max[i])} / ${fmtTemp(d.min[i])}`.replace(/°[CF]/g, "°"), t2: `💧 ${d.pop[i] ?? 0}%` }));
 }
 
 export function renderForecast(w: Weather) {
   const chip = (c: Card) => `<div class="fc-card"><b>${c.title}</b><span class="fc-i">${c.icon}</span><em>${c.t1}</em><small>${c.t2}</small></div>`;
-  $("fc-hours").innerHTML = hourCards(w, 8).map(chip).join("") || "<small>Keine Vorhersage verfügbar.</small>";
+  $("fc-hours").innerHTML = hourCards(w, 8).map(chip).join("") || `<small>${tr("fc_none")}</small>`;
   $("fc-days").innerHTML = dayCards(w, 5).map(chip).join("");
 }
 

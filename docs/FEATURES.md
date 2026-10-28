@@ -39,7 +39,7 @@ Parameter names are case-insensitive; booleans accept `true/false`, `yes/no`, `o
 | `refresh` | 0–240 (minutes) | `10` | Weather refresh interval, `0` = off |
 | `vorhersage` | `aus`, `stunden`, `tage` | `aus` | Forecast off / hours / days |
 | `einheit` (alias `unit`) | `celsius`, `fahrenheit` | `celsius` | Temperature unit |
-| `sprache` (alias `lang`) | `de`, `en` | `de` | Language of weather texts |
+| `sprache` (alias `lang`) | `de`, `en` | `de` | Language of the whole interface (German/English). Default: last choice, else browser language; `de` in kiosk mode |
 | `testwetter` | `klar`, `heiter`, `wolkig`, `bedeckt`, `nebel`, `nieselregen`, `regen`, `gewitter`, `schnee`, `wind` | – | Test: fake weather |
 | `tageszeit` | `auto`, `tag`, `nacht` | `auto` | Force day or night |
 

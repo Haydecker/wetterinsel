@@ -19,7 +19,9 @@ Die Wetterinsel läuft als selbst gehostete **Docker**-App oder als **einzelne H
 - Vorhersage (Stunden oder Tage) im Bild oder in der Seitenleiste
 - Zoom, Verschieben und Touch für Smartphone und Tablet; als Web-App installierbar
 - Kiosk-Modus und URL-Parameter zum sauberen Einbetten – siehe [docs/FEATURES.de.md](docs/FEATURES.de.md)
-- Oberfläche auf Deutsch (Wettertexte deutsch oder englisch mit `sprache=en`)
+- **Zweisprachig: Deutsch und Englisch** – per Klick auf die Flaggen oben umschaltbar (oder `sprache=en`); die Wahl wird gemerkt
+
+![Wetterinsel – deutsche Oberfläche](docs/screenshot-ui.png)
 
 ## Zwei Arten, sie zu betreiben
 

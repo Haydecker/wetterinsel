@@ -9,5 +9,5 @@ export function setWeather(raw: Weather | null) { state.weatherRaw = raw; state.
 export function renderWeather(w:Weather) {
   renderForecast(w);
   weatherSummary.innerHTML=`<span class="icon">${iconWeather(w.code,w.day)}</span><div><b>${fmtTemp(w.temperature)}</b><small>${labelWeather(w.code)}</small></div><div class="details">${L("gefuehlt")} ${fmtTemp(w.feels)}<br>${L("wind")} ${fmtWind(w.wind)} · ${compass(w.direction)}<br>${L("bewoelkung")} ${Math.round(w.clouds)}% · ${w.rain.toFixed(1)} mm</div>`;
-  $("updated").textContent=`${L("stand")}: ${w.time.replace("T"," ")} · Open-Meteo`;
+  $("updated").removeAttribute("data-i18n"); $("updated").textContent=`${L("stand")}: ${w.time.replace("T"," ")} · Open-Meteo`;
 }

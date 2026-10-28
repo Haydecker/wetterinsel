@@ -1,4 +1,5 @@
 import { ElementOSM, LatLon } from "../types";
+import { tr } from "../i18n";
 import { queryRadius } from "../options";
 import { state } from "../state";
 import { message } from "../ui/status";
@@ -20,12 +21,12 @@ export async function osm(c: LatLon, id: number): Promise<ElementOSM[]> {
     const s = await viaServer(`/api/map?lat=${c.lat.toFixed(5)}&lon=${c.lon.toFixed(5)}&r=${r}`);
     if (!s) return osmDirect(c, r);
     if (s.status === 200) return s.data.elements as ElementOSM[];
-    if (s.status !== 503) throw new Error(s.data.error ?? `Kartenserver HTTP ${s.status}`);
+    if (s.status !== 503) throw new Error(s.data.error ?? tr("m_map_http", s.status));
     if (id !== state.runId) throw new Error("abgebrochen");
-    message(`Kartenserver überlastet – der Server holt die Daten im Hintergrund. Neuer Versuch in 20 s (${i + 1}) …`);
+    message(tr("m_map_busy", i + 1));
     await sleep(20000);
   }
-  throw new Error("Die Kartendaten konnten nicht geladen werden. Bitte später erneut versuchen.");
+  throw new Error(tr("m_map_failed"));
 }
 
 export async function osmDirect(c: LatLon, r: number): Promise<ElementOSM[]> {
@@ -51,11 +52,11 @@ export async function osmDirect(c: LatLon, r: number): Promise<ElementOSM[]> {
     return ((await res.json()) as {elements:ElementOSM[]}).elements ?? [];
   };
   for(let attempt=1;attempt<=2;attempt++){
-    message(attempt===1?"Lade Kartendaten (alle Kartenserver parallel) …":"Kartenserver ausgelastet – zweiter Versuch …");
+    message(attempt===1?tr("m_map_loading"):tr("m_map_retry"));
     try { const e=await Promise.any(mirrors.map(ask)); try { localStorage.setItem(key,JSON.stringify({t:Date.now(),e})); } catch {} return e; }
     catch { await sleep(4000); }
   }
-  throw new Error("Die öffentlichen Kartenserver (Overpass) sind gerade überlastet oder nicht erreichbar. Das liegt nicht an der Adresse – bitte in ein paar Minuten über „Insel neu laden“ erneut versuchen.");
+  throw new Error(tr("m_overpass_down"));
 }
 
 /** Seen (Relationen wie der Bodensee) – optional, Fehler sind nicht schlimm. */

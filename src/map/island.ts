@@ -1,4 +1,5 @@
 import { LatLon, P, Shape } from "../types";
+import { tr as T } from "../i18n";
 import { KIOSK, opts } from "../options";
 import { $, svg } from "../dom";
 import { state } from "../state";
@@ -120,6 +121,6 @@ export function draw(shapes: Shape[], c: LatLon) {
   const overlay = node(svg, "g", { "pointer-events": "none" }); drawBirds(overlay, w); drawWeather(overlay); if (opts.mondphase && state.weatherNow) moonBadge(overlay); weatherBubble(overlay); forecastStrip(overlay);
   if (KIOSK) { const at = node(svg, "text", { x: 996, y: 553, "text-anchor": "end", "font-size": 9, fill: night ? "#fff" : INK, opacity: ".55", "font-family": "system-ui,sans-serif" }); at.textContent = "© OpenStreetMap · Open-Meteo"; }
   state.drawn = true;
-  $("stats").textContent = `${buildings.length} Gebäude · ${roads.length} Straßenabschnitte · ${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}`;
-  $("attribution").innerHTML = 'Kartendaten: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap-Mitwirkende</a> · Wetter: <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a>';
+  $("stats").removeAttribute("data-i18n"); $("stats").textContent = T("stats", buildings.length, roads.length, `${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}`);
+  $("attribution").innerHTML = T("attribution");
 }

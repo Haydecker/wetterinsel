@@ -29,6 +29,13 @@ function parseObjekte(v: string | null): string[] {
   return OBJEKTE.filter(o => s.split(/[,;\s]+/).includes(o));
 }
 
+/** Standardsprache: im Kiosk immer Deutsch (stabile Einbettung), sonst zuletzt gewählte, sonst Browsersprache. */
+function defaultLang(kiosk: boolean): "de" | "en" {
+  if (kiosk) return "de";
+  try { const s = localStorage.getItem("wi-lang"); if (s === "de" || s === "en") return s; } catch {}
+  return (navigator.language ?? "de").toLowerCase().startsWith("de") ? "de" : "en";
+}
+
 export function parseOpts(search: string): Opts {
   const raw = new URLSearchParams(search), q = new URLSearchParams();
   raw.forEach((v, k) => { k = k.toLowerCase(); q.set(ALIASES[k] ?? k, v); });
@@ -43,7 +50,7 @@ export function parseOpts(search: string): Opts {
     objekte: parseObjekte(q.get("objekte")),
     kiosk, zoom: bool(q.get("zoom"), !kiosk), kompass: bool(q.get("kompass"), false), mondphase: bool(q.get("mondphase"), false), mondalter: Number.isFinite(parseFloat(q.get("mondalter") ?? "")) ? Math.max(0, Math.min(29.5, parseFloat(q.get("mondalter")!))) : undefined, bg: (q.get("bg") ?? "").trim().replace(/^#/, "").toLowerCase(),
     radius: Math.round(num("radius", 200, 100, 1500) / 10) * 10, animation: bool(q.get("animation"), !matchMedia("(prefers-reduced-motion: reduce)").matches), refresh: Math.round(num("refresh", 10, 0, 240)),
-    vorhersage: pick("vorhersage", ["aus", "stunden", "tage"], "aus"), einheit: pick("einheit", ["celsius", "fahrenheit"], "celsius"), sprache: pick("sprache", ["de", "en"], "de"),
+    vorhersage: pick("vorhersage", ["aus", "stunden", "tage"], "aus"), einheit: pick("einheit", ["celsius", "fahrenheit"], "celsius"), sprache: pick("sprache", ["de", "en"], defaultLang(kiosk)),
     testwetter: pick("testwetter", [...Object.keys(TESTWETTER), ""], ""), tageszeit: pick("tageszeit", ["auto", "tag", "nacht"], "auto"),
   };
 }
@@ -59,7 +66,8 @@ export function buildQuery(o: Opts, useCoords: boolean, c: LatLon | null): strin
   const flags: (keyof Opts)[] = ["wetter", "temperatur", "wind", "zeit", "kiosk", "zoom", "kompass", "mondphase", "animation"];
   for (const k of flags) if (o[k] !== d[k]) q.set(k, String(o[k]));
   if (o.objekte.length !== OBJEKTE.length) q.set("objekte", o.objekte.length ? o.objekte.join(",") : "keine");
-  for (const k of ["textpos", "bg", "radius", "refresh", "vorhersage", "einheit", "sprache", "testwetter", "tageszeit"] as (keyof Opts)[]) if (String(o[k]) !== String(d[k]) && String(o[k]) !== "") q.set(k, String(o[k]));
+  for (const k of ["textpos", "bg", "radius", "refresh", "vorhersage", "einheit", "testwetter", "tageszeit"] as (keyof Opts)[]) if (String(o[k]) !== String(d[k]) && String(o[k]) !== "") q.set(k, String(o[k]));
+  if (o.sprache !== "de") q.set("sprache", o.sprache);
   return q.toString();
 }
 

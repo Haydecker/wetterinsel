@@ -39,7 +39,7 @@ Groß-/Kleinschreibung der Namen ist egal; Wahrheitswerte: `true/false`, `ja/nei
 | `refresh` | 0–240 (Minuten) | `10` | Wetter-Aktualisierung, `0` = aus |
 | `vorhersage` | `aus`, `stunden`, `tage` | `aus` | Vorhersage aus / Stunden / Tage |
 | `einheit` (auch `unit`) | `celsius`, `fahrenheit` | `celsius` | Temperatureinheit |
-| `sprache` (auch `lang`) | `de`, `en` | `de` | Sprache der Wettertexte |
+| `sprache` (auch `lang`) | `de`, `en` | `de` | Sprache der gesamten Oberfläche (Deutsch/Englisch). Standard: letzte Wahl, sonst Browsersprache; im Kiosk-Modus `de` |
 | `testwetter` | `klar`, `heiter`, `wolkig`, `bedeckt`, `nebel`, `nieselregen`, `regen`, `gewitter`, `schnee`, `wind` | – | Test: erfundenes Wetter |
 | `tageszeit` | `auto`, `tag`, `nacht` | `auto` | Tag oder Nacht erzwingen |
 

@@ -19,7 +19,9 @@ It runs as a self-hosted **Docker** app or as a **single HTML file** you can dro
 - Forecast (hours or days) in the picture or side panel
 - Zoom, pan and touch for phones and tablets; installable as a web app
 - Kiosk mode and URL parameters for clean embedding – see [docs/FEATURES.md](docs/FEATURES.md)
-- UI language: German (weather texts can be German or English via `sprache=en`)
+- **Bilingual: German and English** – switch with one click on the flags in the header (or `sprache=en`); the choice is remembered
+
+![Weather Island – English interface](docs/screenshot-ui-en.png)
 
 ## Two ways to run it
 

@@ -1,5 +1,9 @@
 # Changelog / Änderungsprotokoll
 
+## 1.2.0
+- **EN:** Bilingual interface (German/English) with a flag switch in the header; language is remembered, follows the browser language by default and is `de` in kiosk mode unless `sprache=en` is given. Status messages, forecast, moon, compass, errors and all labels are translated.
+- **DE:** Zweisprachige Oberfläche (Deutsch/Englisch) mit Flaggen-Umschalter im Kopf; die Sprache wird gemerkt, folgt standardmäßig der Browsersprache und ist im Kiosk-Modus `de`, sofern nicht `sprache=en` gesetzt ist. Statusmeldungen, Vorhersage, Mond, Kompass, Fehler und alle Beschriftungen sind übersetzt.
+
 ## 1.1.1
 - **EN:** Buildings and areas mapped as OSM multipolygon relations (e.g. town halls with courtyards) are now drawn; pedestrian squares and parking areas are drawn as paved areas instead of outlines on grass.
 - **DE:** Gebäude und Flächen, die in OSM als Multipolygon-Relationen erfasst sind (z. B. Rathäuser mit Innenhof), werden jetzt gezeichnet; Fußgängerplätze und Parkflächen erscheinen als gepflasterte Flächen statt als Umrisse auf Gras.

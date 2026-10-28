@@ -1,9 +1,10 @@
 import "./styles.css";
+import { applyStaticTexts, onLanguage, setLanguage, tr } from "./i18n";
 import { LatLon } from "./types";
 import { KIOSK, opts } from "./options";
-import { $, address } from "./dom";
+import { $, S, address } from "./dom";
 import { state } from "./state";
-import { message } from "./ui/status";
+import { message, retranslateStatus } from "./ui/status";
 import { shapesFrom } from "./map/projection";
 import { osm, lakes } from "./api/osm";
 import { lakesFrom } from "./map/lakes";
@@ -30,11 +31,11 @@ async function loadAll(mode: "address" | "url" | "center" = "address") {
     if (mode === "center" && state.center) found = { point: state.center, label: $("place").textContent ?? "" };
     else if (mode === "url" && opts.lat != null && opts.lon != null) found = { point: { lat: opts.lat, lon: opts.lon }, label: `${opts.lat.toFixed(4)}, ${opts.lon.toFixed(4)}` };
     else {
-      const q = address.value.trim(); if (!q) { message("Bitte eine Adresse eingeben.", "error"); return; }
-      message("Suche Adresse …"); opts.adresse = q; found = await geocode(q); lastGeocoded = q;
+      const q = address.value.trim(); if (!q) { message(tr("m_need_addr"), "error", "m_need_addr"); return; }
+      message(tr("m_searching"), "", "m_searching"); opts.adresse = q; found = await geocode(q); lastGeocoded = q;
     }
     if (mode !== "center") resetView();
-    state.center = found.point; $("place").textContent = found.label; message("Lade Gebäude, Straßen und Wetter …");
+    state.center = found.point; $("place").removeAttribute("data-i18n"); $("place").textContent = found.label; message(tr("m_loading"), "", "m_loading");
     state.lastLakes = [];
     const lk = lakes(found.point).then(e => lakesFrom(e, found.point)).catch(() => []);
     const [elements, w] = await Promise.all([osm(found.point, id), fetchWeather(found.point).catch(() => null)]);
@@ -42,20 +43,20 @@ async function loadAll(mode: "address" | "url" | "center" = "address") {
     state.lastLakes = (await Promise.race([lk, sleep(15000).then(() => null)])) ?? [];
     void lk.then(l => { if (id === state.runId && l.length && !state.lastLakes.length) { state.lastLakes = l; rerender(); } });
     const shapes = shapesFrom(elements, found.point);
-    if (!shapes.some(s => s.kind === "building")) throw new Error("Keine Gebäudeumrisse im Ausschnitt gefunden.");
+    if (!shapes.some(s => s.kind === "building")) throw new Error(tr("m_no_buildings"));
     state.lastShapes = shapes; opts.lat = found.point.lat; opts.lon = found.point.lon;
     if (w) setWeather(w); else if (state.weatherRaw) setWeather(state.weatherRaw);
     draw(shapes, found.point); updateUrl();
-    if (w) message("Wetterinsel erfolgreich erstellt.", "success"); else message("Insel erstellt, aber die Wetterdaten sind gerade nicht erreichbar. Mit „Aktualisieren“ erneut versuchen.", "error");
-  } catch (e) { if (String(e).includes("abgebrochen")) return; message(e instanceof Error ? e.message : "Unbekannter Fehler.", "error"); }
+    if (w) message(tr("m_ok"), "success", "m_ok"); else message(tr("m_ok_noweather"), "error", "m_ok_noweather");
+  } catch (e) { if (String(e).includes("abgebrochen")) return; message(e instanceof Error ? e.message : tr("m_unknown"), "error"); }
   finally { if (id === state.runId) { $("create").removeAttribute("disabled"); $("reload").removeAttribute("disabled"); } }
 }
 
 async function weatherOnly() {
   if (!state.center) { await loadAll(); return; }
   $("weather-reload").setAttribute("disabled","true");
-  try { setWeather(await fetchWeather(state.center)); draw(state.lastShapes, state.center); message("Wetter aktualisiert.", "success"); }
-  catch (e) { message(e instanceof Error ? e.message : "Wetter konnte nicht aktualisiert werden.", "error"); }
+  try { setWeather(await fetchWeather(state.center)); draw(state.lastShapes, state.center); message(tr("m_w_updated"), "success", "m_w_updated"); }
+  catch (e) { message(e instanceof Error ? e.message : tr("m_w_failed"), "error"); }
   finally { $("weather-reload").removeAttribute("disabled"); }
 }
 
@@ -76,6 +77,10 @@ if (KIOSK) {
 }
 
 address.value = opts.lat != null && !urlHasAddr ? "" : opts.adresse;
+
+applyStaticTexts();
+onLanguage(() => { retranslateStatus(); S("o-sprache").value = opts.sprache; updateUrl(); rerender(); });
+$("lang-de").addEventListener("click", () => setLanguage("de")); $("lang-en").addEventListener("click", () => setLanguage("en"));
 
 wireForm({ reload: () => void loadAll(state.center ? "center" : "address"), arm: armTimer, rerender, apply: applyAll }); wireZoom(); applyZoomMode(); updateUrl();
 
